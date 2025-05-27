@@ -1,0 +1,326 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #ccc; /* Lighter text for dark theme */
+    background-color: #1a1a1a; /* Dark background */
+    padding-top: 0; /* Remove padding if header is not fixed or canvas handles it */
+}
+
+.container {
+    width: 80%;
+    max-width: 1000px;
+    margin: auto;
+    overflow: hidden;
+    padding: 0 20px;
+    position: relative; /* For z-index context if needed */
+    z-index: 2; /* Ensure content is above canvas if it overlaps */
+}
+
+/* Header */
+header {
+    background: #111; /* Even darker header background */
+    color: #e0e0e0;
+    padding: 30px 0; /* Adjust padding as needed */
+    text-align: center;
+    border-bottom: #007bff 3px solid;
+    position: relative; /* Needed for canvas positioning */
+    overflow: hidden; /* To contain the canvas if it's absolutely positioned */
+}
+
+#neuralNetworkCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Behind header content */
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    position: relative; /* To sit on top of the canvas */
+    z-index: 1;
+    padding: 20px; /* Add some padding so content isn't at the very edge */
+    background-color: rgba(17, 17, 17, 0.3); /* Slight dark transparent bg for readability */
+    border-radius: 8px;
+}
+
+.header-text {
+    flex-basis: 70%;
+    text-align: left;
+}
+
+header h1 {
+    margin-bottom: 10px;
+    font-size: 2.8em; /* Slightly larger */
+    color: #00bfff; /* Deep Sky Blue - matches animation */
+    text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff; /* Glowing effect */
+}
+
+.contact-info {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.contact-info a {
+    color: #40c4ff; /* Lighter blue for links */
+    text-decoration: none;
+    margin: 0 5px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: #82e9ff;
+    text-shadow: 0 0 5px #82e9ff;
+}
+
+.contact-info i {
+    margin-right: 3px;
+}
+
+.profile-pic {
+    width: 130px; /* Slightly larger */
+    height: 130px;
+    border-radius: 50%;
+    border: 4px solid #007bff; /* Themed border */
+    object-fit: cover;
+    margin-left: 20px;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Glow for profile pic */
+}
+
+/* Sections */
+section {
+    padding: 40px 0; /* Increased padding */
+    border-bottom: 1px solid #333; /* Darker border */
+}
+
+section:last-of-type {
+    border-bottom: none;
+}
+
+section h2 {
+    color: #00bfff; /* Themed section titles */
+    margin-bottom: 25px;
+    font-size: 2em; /* Larger section titles */
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+    display: inline-block;
+    text-shadow: 0 0 3px rgba(0, 191, 255, 0.7);
+}
+
+section h2 i {
+    margin-right: 12px;
+    color: #007bff;
+}
+
+/* Education & Publication Entries */
+.education-entry, .publication-entry, .reference-entry {
+    background: #222; /* Darker cards */
+    color: #ccc;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-left: 5px solid #007bff; /* Accent border */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.education-entry:hover, .publication-entry:hover, .reference-entry:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+
+.education-entry h3, .publication-entry h3, .reference-entry h3 {
+    color: #40c4ff; /* Lighter blue for headings inside cards */
+    margin-bottom: 10px;
+}
+
+.education-entry p, .publication-entry p, .reference-entry p {
+    margin-bottom: 8px;
+}
+
+/* Skills List */
+#skills ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#skills ul li {
+    background: #2a2a2a; /* Darker skill items */
+    color: #bbb;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 5px solid #00bfff; /* Consistent accent */
+    transition: background-color 0.3s ease;
+}
+#skills ul li:hover {
+    background-color: #333;
+}
+
+#skills ul li strong {
+    color: #4dd0e1; /* Cyan for skill categories */
+}
+
+/* Projects */
+/* Ensure section#projects itself is a flex container if you want its h2 outside the flex flow of cards */
+#projects {
+    /* display: flex; /* Remove this from the section if h2 is inside */
+    /* flex-wrap: wrap; */
+    /* gap: 20px; */
+    /* justify-content: space-between; */
+}
+/* Add a wrapper for project cards if you need flexbox for them specifically */
+.projects-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Spacing between cards */
+    justify-content: space-around; /* Distribute cards nicely */
+}
+
+
+.project-card {
+    background: #252525; /* Darker project cards */
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px; /* Keep if not using gap from flex parent */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    flex-basis: calc(50% - 15px); /* Two cards per row, accounting for gap */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.project-card h3 {
+    color: #40c4ff;
+    margin-bottom: 12px;
+}
+
+.project-card p {
+    margin-bottom: 12px;
+    flex-grow: 1;
+}
+
+.project-card p strong {
+    color: #80deea; /* Lighter cyan for emphasis */
+}
+
+.button {
+    display: inline-block;
+    background: #007bff;
+    color: #fff;
+    padding: 12px 18px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: flex-start;
+    margin-top: auto;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.button:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Languages List */
+#languages ul {
+    list-style-type: none; /* Remove default bullets */
+    padding-left: 0;
+}
+
+#languages ul li {
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px dashed #444; /* Subtle separator */
+}
+#languages ul li:last-child {
+    border-bottom: none;
+}
+
+#languages ul li strong {
+    color: #4dd0e1;
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #111; /* Consistent with header */
+    color: #aaa;
+    margin-top: 40px;
+    border-top: 1px solid #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        width: 95%; /* More space on smaller screens */
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .header-text {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .profile-pic {
+        margin-left: 0;
+        margin-top: 15px;
+        width: 110px;
+        height: 110px;
+    }
+
+    header h1 {
+        font-size: 2.2em;
+    }
+    
+    .projects-grid { /* Target the grid for responsiveness */
+        /* No change needed here yet, flex-basis on .project-card handles it */
+    }
+    .project-card {
+        flex-basis: calc(100% - 15px); /* One card per row on smaller screens */
+    }
+    section h2 {
+        font-size: 1.7em;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2em;
+    }
+    section h2 {
+        font-size: 1.6em;
+    }
+    .button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+}
