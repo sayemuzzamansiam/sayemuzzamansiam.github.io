@@ -1,295 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sayemuzzaman Siam - Portfolio</title>
-    <link rel="stylesheet" href="style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header>
-      <canvas id="neuralNetworkCanvas"></canvas>
-      <div class="container header-content">
-        <div class="header-text">
-          <h1>Sayemuzzaman Siam</h1>
-          <p class="contact-info">
-            <a href="https://github.com/sayemuzzamansiam" target="_blank"
-              ><i class="fab fa-github"></i> GitHub</a
-            >
-            |
-            <a href="https://linkedin.com/in/sayemuzzamansiam" target="_blank"
-              ><i class="fab fa-linkedin"></i> LinkedIn</a
-            >
-            |
-            <a href="mailto:sayemuzzaman505@gmail.com"
-              ><i class="fas fa-envelope"></i> sayemuzzaman505@gmail.com</a
-            >
-            |
-            <a href="https://medium.com/@sayemuzzamansiam" target="_blank"
-              ><i class="fab fa-medium"></i> Medium</a
-            >
-            |
-            <a href="https://www.kaggle.com/sayemuzzaman" target="_blank"
-              ><i class="fab fa-kaggle"></i> Kaggle</a
-            >
-            |
-            <a
-              href="https://monkeytype.com/profile/SayemuzzamanSiam"
-              target="_blank"
-              >MonkeyType</a
-            >
-            <br />
-            <i class="fas fa-phone"></i> Phone: +8801839592354
-          </p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siam | Neural Engine v2.5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body x-data="neuralPortfolio">
+
+    <div class="grid-bg"></div>
+    <div class="scanline"></div>
+
+    <!-- HUD HEADER -->
+    <header class="p-4 md:p-8 relative z-50">
+        <div class="max-w-[1400px] mx-auto glass rounded-xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-center border border-cyan-500/30 shadow-[0_0_50px_rgba(0,242,255,0.1)]">
+            <div class="flex items-center gap-5">
+                <div class="relative">
+                    <div class="w-16 h-16 rounded-full border-2 border-cyan-500 overflow-hidden shadow-[0_0_20px_rgba(0,242,255,0.5)]">
+                        <img src="https://github.com/sayemuzzamansiam.png" alt="Siam">
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-[#05080a] rounded-full"></div>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-[0.2em]">SAYEMUZZAMAN_<span class="text-cyan-500">SIAM</span></h1>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-[9px] font-mono text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded border border-cyan-400/20">NODE_STABLE</span>
+                        <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Epoch: <span x-text="epoch"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE METRICS -->
+            <div class="hidden lg:grid grid-cols-4 gap-8 border-l border-slate-800 pl-8">
+                <div class="metric"><p>IELTS</p><h2 class="text-green-400">7.5</h2></div>
+                <div class="metric"><p>PAPERS</p><h2 class="text-purple-400">03</h2></div>
+                <div class="metric"><p>PROJECTS</p><h2 class="text-cyan-400">23</h2></div>
+            </div>
         </div>
-        <img
-          src="https://avatars.githubusercontent.com/u/149005089?v=4"
-          alt="Sayemuzzaman Siam"
-          class="profile-pic"
-        />
-      </div>
     </header>
 
-    <main class="container">
-      <section id="about">
-        <h2><i class="fas fa-user-tie"></i> About Me</h2>
-        <p>
-          Motivated Computer Science and Engineering graduate with hands-on
-          experience in deep learning, neural networks, and data-driven
-          projects. Proficient in implementing innovative solutions in computer
-          vision, natural language processing, and predictive modeling.
-          Passionate about Deep Learning and enjoy researching to contribute to
-          the field of Computer Vision.
-        </p>
-      </section>
+    <!-- INTERACTIVE NETWORK GRAPH -->
+    <div id="network-container"></div>
 
-      <section id="education">
-        <h2><i class="fas fa-university"></i> Education</h2>
-        <div class="education-entry">
-          <h3>East West University</h3>
-          <p>Bachelor of Science in Computer Science and Engineering</p>
-          <p>CGPA: 3.04/4.00</p>
-          <p>
-            <strong>Relevant Coursework:</strong> Computer Networks, Data
-            Structures and Algorithms, Artificial Intelligence, Web Programming,
-            Machine Learning, Digital Image Processing, Software Engineering,
-            Statistics for Data Science.
-          </p>
+    <!-- DATA READOUT PANEL (Right Side) -->
+    <aside class="fixed right-6 top-52 bottom-24 w-full max-w-sm z-40 pointer-events-none">
+        <div class="h-full flex flex-col gap-4 pointer-events-auto overflow-y-auto pr-2">
+            
+            <!-- Default Hint - ENHANCED VERSION -->
+            <template x-if="!activeNodeData">
+                <div class="glass p-8 rounded-xl border-2 border-cyan-500/50 shadow-[0_0_40px_rgba(0,242,255,0.25)] animate-pulse-glow text-center mt-20 bg-gradient-to-br from-cyan-500/5 to-purple-500/5">
+                    <div class="mb-4">
+                        <svg class="w-12 h-12 mx-auto text-cyan-400 animate-bounce-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-cyan-400 font-bold uppercase tracking-[0.2em] mb-2">System Ready</p>
+                    <p class="text-xs text-white tracking-wider mb-1">Click any node to explore the Network</p>
+                    <p class="text-[10px] text-slate-400 tracking-wider">Click the node to Expand or Collapse</p>
+                    <div class="mt-4 pt-4 border-t border-cyan-500/30">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-[0.25em] animate-pulse">Awaiting Input Signal...</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Active Content Card -->
+            <template x-if="activeNodeData">
+                <div class="glass p-6 rounded-xl border border-cyan-500/40 shadow-2xl flex flex-col animate-slide-in" 
+                     :class="{
+                         'border-orange-500/40': activeNodeData.id === 'skills',
+                         'border-white/40': activeNodeData.id === 'betopia',
+                         'border-amber-500/40': activeNodeData.id === 'ewu' || activeNodeData.color === '#f59e0b',
+                         'border-red-500/40': activeNodeData.id === 'cv' || activeNodeData.color === '#ef4444',
+                         'border-green-500/40': activeNodeData.color === '#10b981',
+                         'border-cyan-500/40': activeNodeData.id !== 'skills' && activeNodeData.id !== 'betopia' && activeNodeData.id !== 'ewu' && activeNodeData.id !== 'cv' && activeNodeData.color !== '#10b981' && activeNodeData.color !== '#f59e0b' && activeNodeData.color !== '#ef4444'
+                     }">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[9px] font-mono border px-2 py-1 uppercase" 
+                              :class="{
+                                  'text-orange-400 border-orange-400/30': activeNodeData.id === 'skills',
+                                  'text-white border-white/30': activeNodeData.id === 'betopia',
+                                  'text-amber-400 border-amber-400/30': activeNodeData.id === 'ewu' || activeNodeData.color === '#f59e0b',
+                                  'text-red-400 border-red-400/30': activeNodeData.id === 'cv' || activeNodeData.color === '#ef4444',
+                                  'text-green-400 border-green-400/30': activeNodeData.color === '#10b981',
+                                  'text-cyan-400 border-cyan-400/30': activeNodeData.id !== 'skills' && activeNodeData.id !== 'betopia' && activeNodeData.id !== 'ewu' && activeNodeData.id !== 'cv' && activeNodeData.color !== '#10b981' && activeNodeData.color !== '#f59e0b' && activeNodeData.color !== '#ef4444'
+                              }" 
+                              x-text="activeNodeData.type"></span>
+                        <button @click="activeNodeData = null; tetherActive = false" class="text-slate-500 hover:text-white transition-colors">✕</button>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 leading-tight" x-text="activeNodeData.name"></h3>
+                    <div class="text-[11px] text-slate-400 font-mono mb-4 bg-black/40 p-3 border-l-2" 
+                         :class="{
+                             'border-orange-500': activeNodeData.id === 'skills',
+                             'border-white': activeNodeData.id === 'betopia',
+                             'border-amber-500': activeNodeData.id === 'ewu' || activeNodeData.color === '#f59e0b',
+                             'border-red-500': activeNodeData.id === 'cv' || activeNodeData.color === '#ef4444',
+                             'border-green-500': activeNodeData.color === '#10b981',
+                             'border-cyan-500': activeNodeData.id !== 'skills' && activeNodeData.id !== 'betopia' && activeNodeData.id !== 'ewu' && activeNodeData.id !== 'cv' && activeNodeData.color !== '#10b981' && activeNodeData.color !== '#f59e0b' && activeNodeData.color !== '#ef4444'
+                         }">
+                        <p x-text="activeNodeData.description"></p>
+                    </div>
+                    
+                    <!-- ROOT NODE SPECIAL DISPLAY -->
+                    <template x-if="activeNodeData.id === 'root'">
+                        <div class="mb-4 space-y-4">
+                            <!-- About Me -->
+                            <div>
+                                <p class="text-[9px] text-cyan-400 uppercase tracking-wider mb-2 font-bold">About</p>
+                                <p class="text-[10px] text-slate-300 leading-relaxed">
+                                    Motivated Computer Science and Engineering graduate with hands-on experience in deep learning, neural networks, and data-driven projects. 
+                                    Proficient in implementing innovative solutions in computer vision, natural language processing, and predictive modeling.</p>
+                            </div>
+                            
+                            
+                            <!-- Contact -->
+                            <div>
+                                <p class="text-[9px] text-cyan-400 uppercase tracking-wider mb-2 font-bold">Contact</p>
+                                <div class="space-y-1.5">
+                                    <a href="mailto:sayemuzzaman505@gmail.com" class="text-[10px] text-slate-300 hover:text-cyan-400 transition-colors block">📧 sayemuzzaman505@gmail.com</a>
+                                    <p class="text-[10px] text-slate-300">📱 +880 1643960591</p>
+                                    <p class="text-[10px] text-slate-300">📍 Dhaka, Bangladesh</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Links -->
+                            <div>
+                                <p class="text-[9px] text-cyan-400 uppercase tracking-wider mb-2 font-bold">Profiles</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="https://www.github.com/sayemuzzamansiam" target="_blank" class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30 hover:border-cyan-400 transition-colors">Github</a>
+                                    <a href="https://www.kaggle.com/sayemuzzaman" target="_blank" class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30 hover:border-cyan-400 transition-colors">Kaggle</a>
+                                    <a href="https://monkeytype.com/profile/SayemuzzamanSiam" target="_blank" class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30 hover:border-cyan-400 transition-colors">MonkeyType</a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- BETOPIA GROUP SPECIAL DISPLAY -->
+                    <template x-if="activeNodeData.id === 'betopia'">
+                        <div class="mb-4 space-y-4">
+                            <!-- Role & Duration -->
+                            <div class="bg-gradient-to-r from-white/5 to-slate-900/40 p-3 rounded border border-white/20">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-sm font-bold text-white">AI Developer</p>
+                                    <span class="text-[9px] text-slate-400 font-mono">03/06/2025 - 08/12/2025</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400">AI Department | Dhaka, Bangladesh</p>
+                            </div>
+                            
+                            <!-- Key Responsibilities -->
+                            <div>
+                                <p class="text-[9px] text-white uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-white rounded-full"></span>
+                                    Key Responsibilities
+                                </p>
+                                <div class="space-y-2 ml-3">
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-cyan-400 text-[10px] mt-1">▹</span>
+                                        <p class="text-[10px] text-slate-300 leading-relaxed">Led multi-disciplinary teams (AI, design, frontend, backend) on AI-focused projects, managing technical architecture and coordinating development workflows.</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-cyan-400 text-[10px] mt-1">▹</span>
+                                        <p class="text-[10px] text-slate-300 leading-relaxed">Developed production AI systems using Python, FastAPI, and LLM APIs including context-aware chatbots, business consulting tools, and voice automation platforms.</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-cyan-400 text-[10px] mt-1">▹</span>
+                                        <p class="text-[10px] text-slate-300 leading-relaxed">Implemented NLP-based conversational AI and text-to-speech pipelines with integrated speech recognition for quality assessment.</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-cyan-400 text-[10px] mt-1">▹</span>
+                                        <p class="text-[10px] text-slate-300 leading-relaxed">Conducted research and experimentation with large language models, prompt engineering, and API optimization for real-time applications.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Technologies Used -->
+                            <div>
+                                <p class="text-[9px] text-white uppercase tracking-wider mb-2 font-bold">Technologies</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">Python</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">FastAPI</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">LLM APIs</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">NLP</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">TTS Pipelines</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-slate-800 to-slate-700 text-slate-200 px-3 py-1 rounded border border-slate-600/50">Speech Recognition</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- SKILLS SPECIAL DISPLAY -->
+                    <template x-if="activeNodeData.id === 'skills'">
+                        <div class="mb-4 space-y-4">
+                            <!-- Programming Languages -->
+                            <div>
+                                <p class="text-[9px] text-orange-400 uppercase tracking-wider mb-2 font-bold">Programming Languages</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">Python</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">C++</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">JavaScript</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">Java</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">SQL</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-orange-900/40 to-orange-800/40 text-orange-300 px-3 py-1.5 rounded border border-orange-500/30">PHP</span>
+                                </div>
+                            </div>
+                            
+                            <!-- ML/AI Frameworks -->
+                            <div>
+                                <p class="text-[9px] text-cyan-400 uppercase tracking-wider mb-2 font-bold">ML/AI Frameworks</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">PyTorch</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">TensorFlow</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">Keras</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">Scikit-learn</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">LangChain</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">HuggingFace</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-cyan-900/40 to-cyan-800/40 text-cyan-300 px-3 py-1.5 rounded border border-cyan-500/30">Flask</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Tools & Technologies -->
+                            <div>
+                                <p class="text-[9px] text-purple-400 uppercase tracking-wider mb-2 font-bold">Tools & Technologies</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Git</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Docker</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">FastAPI</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Flask</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">PostgreSQL</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">MongoDB</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">MySQL</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">FAISS</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">ChromaDB</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Jupyter</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">VS Code</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Google Colab</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Kaggle</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-purple-900/40 to-purple-800/40 text-purple-300 px-3 py-1.5 rounded border border-purple-500/30">Render</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Visualization -->
+                            <div>
+                                <p class="text-[9px] text-pink-400 uppercase tracking-wider mb-2 font-bold">Data Visualization</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-pink-900/40 to-pink-800/40 text-pink-300 px-3 py-1.5 rounded border border-pink-500/30">Matplotlib</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-pink-900/40 to-pink-800/40 text-pink-300 px-3 py-1.5 rounded border border-pink-500/30">Seaborn</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-pink-900/40 to-pink-800/40 text-pink-300 px-3 py-1.5 rounded border border-pink-500/30">Pandas</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-pink-900/40 to-pink-800/40 text-pink-300 px-3 py-1.5 rounded border border-pink-500/30">NumPy</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Specializations -->
+                            <div>
+                                <p class="text-[9px] text-green-400 uppercase tracking-wider mb-2 font-bold">Specializations</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-green-900/40 to-green-800/40 text-green-300 px-3 py-1.5 rounded border border-green-500/30">Computer Vision</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-green-900/40 to-green-800/40 text-green-300 px-3 py-1.5 rounded border border-green-500/30">NLP</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-green-900/40 to-green-800/40 text-green-300 px-3 py-1.5 rounded border border-green-500/30">RAG Systems</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-green-900/40 to-green-800/40 text-green-300 px-3 py-1.5 rounded border border-green-500/30">Deep Learning</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-green-900/40 to-green-800/40 text-green-300 px-3 py-1.5 rounded border border-green-500/30">LLM Fine-tuning</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Soft Skills -->
+                            <div>
+                                <p class="text-[9px] text-yellow-400 uppercase tracking-wider mb-2 font-bold">Soft Skills</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-500/30">Teamwork</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-500/30">Self-Learning</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-500/30">Time Management</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- EDUCATION SPECIAL DISPLAY -->
+                    <template x-if="activeNodeData.id === 'ewu'">
+                        <div class="mb-4 space-y-4">
+                            <!-- Degree Info -->
+                            <div class="bg-gradient-to-r from-amber-500/5 to-amber-900/40 p-3 rounded border border-amber-500/20">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-sm font-bold text-white">B.Sc. in Computer Science and Engineering</p>
+                                    <span class="text-[9px] text-slate-400 font-mono">2019 - 2024</span>
+                                </div>
+                                <p class="text-[10px] text-amber-400 mb-1">CGPA: 3.04/4.00</p>
+                                <p class="text-[10px] text-slate-400">Thesis: Emotion Detection from Bangla Text</p>
+                            </div>
+                            
+                            <!-- Relevant Coursework -->
+                            <div>
+                                <p class="text-[9px] text-amber-400 uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-amber-400 rounded-full"></span>
+                                    Relevant Coursework
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Data Structures & Algorithms</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Computer Networks</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Operating Systems</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Database Systems</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Software Engineering</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Artificial Intelligence</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Machine Learning</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Digital Image Processing</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Big Data Analytics</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Linear Algebra</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Statistics for Data Science</span>
+                                    <span class="text-[9px] bg-gradient-to-r from-amber-900/40 to-amber-800/40 text-amber-300 px-3 py-1.5 rounded border border-amber-500/30">Computer & Cyber Security</span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- CV/RESUME SPECIAL DISPLAY -->
+                    <template x-if="activeNodeData.id === 'cv'">
+                        <div class="mb-4 space-y-4">
+                            <!-- CV Info -->
+                            <div class="bg-gradient-to-r from-red-500/5 to-red-900/40 p-4 rounded border border-red-500/20">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-bold text-white">Sayemuzzaman Siam CV v1.pdf</p>
+                                        <p class="text-[10px] text-red-400">Complete Curriculum Vitae</p>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-slate-300 mb-3">Professional CV with comprehensive details on education, research publications, work experience, technical skills, and achievements.</p>
+                            </div>
+                            
+                            <!-- CV Contents -->
+                            <div>
+                                <p class="text-[9px] text-red-400 uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
+                                    <span class="w-1 h-1 bg-red-400 rounded-full"></span>
+                                    Document Contents
+                                </p>
+                                <div class="space-y-1.5 ml-3">
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Professional Summary & About Me</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Complete Work Experience (Betopia Group)</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Academic Background & Education</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Research Publications (3 Papers)</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Technical Skills & Tools</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Major Projects & Achievements</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Language Proficiency (IELTS 7.5)</p>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <span class="text-red-400 text-[10px] mt-0.5">✓</span>
+                                        <p class="text-[10px] text-slate-300">Professional References</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- REGULAR TECH TAGS (for non-skills/betopia/ewu/cv nodes) -->
+                    <template x-if="activeNodeData.tech && activeNodeData.id !== 'skills' && activeNodeData.id !== 'betopia' && activeNodeData.id !== 'ewu' && activeNodeData.id !== 'cv'">
+                        <div class="mb-6 flex flex-wrap gap-2">
+                            <template x-for="t in activeNodeData.tech.split(',')">
+                                <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded" x-text="t"></span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template x-if="activeNodeData.link">
+                        <a :href="activeNodeData.link" target="_blank" 
+                           :class="activeNodeData.id === 'cv' ? 'w-full py-3 bg-red-500 text-white text-center text-xs font-bold rounded-lg hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'w-full py-3 bg-cyan-500 text-black text-center text-xs font-bold rounded-lg hover:bg-white transition-all shadow-[0_0_20px_rgba(0,242,255,0.3)]'"
+                           x-text="activeNodeData.id === 'cv' ? 'OPEN_CV_PDF' : 'EXECUTE_ACCESS_PROTOCOL'">
+                        </a>
+                    </template>
+                </div>
+            </template>
         </div>
-      </section>
+    </aside>
 
-      <section id="skills">
-        <h2><i class="fas fa-laptop-code"></i> Technical Skills</h2>
-        <ul>
-          <li>
-            <strong>Programming Languages:</strong> Python, Java, SQL, C++, PHP
-          </li>
-          <li>
-            <strong>Machine Learning Frameworks:</strong> scikit-learn,
-            TensorFlow, Keras, Flask, FastAPI
-          </li>
-          <li>
-            <strong>Data Visualization Tools:</strong> Matplotlib, Seaborn
-          </li>
-          <li><strong>Database Management:</strong> MySQL</li>
-          <li>
-            <strong>Tools and Platforms:</strong> Jupyter Notebook, Kaggle, Git,
-            Google Colab, Visual Studio Code
-          </li>
-          <li>
-            <strong>Area of Interest:</strong> Machine Learning, Neural
-            Networks, Deep Learning, Computer Vision, Natural Language
-            Processing
-          </li>
-          <li>
-            <strong>Other Skills:</strong> Teamwork, Self-Learning, and Time
-            Management
-          </li>
-        </ul>
-      </section>
-
-      <section id="projects">
-        <h2><i class="fas fa-microchip"></i> Projects</h2>
-
-        <div class="project-card">
-          <h3>Image Caption Generators</h3>
-          <p>
-            Designed Image Captioning models using CNNs (VGG16, ResNet50,
-            EfficientNet-B3) and LSTM on Flickr8k and Flickr30k. Evaluated the
-            models using BLEU Scores.
-          </p>
-          <p>
-            <strong>Technologies:</strong> TensorFlow, Keras, NumPy, Pandas,
-            CNNs
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/ImageCaptionGenerators"
-              target="_blank"
-              class="button"
-              >GitHub: Image Caption Generators</a
-            >
-          </p>
+    <!-- SYSTEM TERMINAL FOOTER -->
+    <footer class="fixed bottom-0 left-0 w-full glass-dark border-t border-slate-800 p-4 z-50">
+        <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                    <span class="text-[10px] font-mono text-green-500 uppercase tracking-widest">System_Online</span>
+                </div>
+                <div class="hidden md:block h-4 w-[1px] bg-slate-800"></div>
+                <div class="hidden md:block text-[10px] font-mono text-slate-500 uppercase italic">
+                    Location: 23.8103° N, 90.4125° E (Dhaka)
+                </div>
+            </div>
+            
+            <div class="flex gap-8">
+                <a href="https://github.com/sayemuzzamansiam" class="footer-link">GITHUB</a>
+                <a href="https://www.linkedin.com/in/sayemuzzamansiam/" class="footer-link underline decoration-cyan-500">LINKEDIN</a>
+                <a href="https://sayemuzzamansiam.medium.com/" class="footer-link">MEDIUM</a>
+                <a href="https://www.researchgate.net/profile/Sayemuzzaman-Siam" class="footer-link">RESEARCH_GATE</a>
+                <a href="https://www.kaggle.com/sayemuzzaman" class="footer-link">KAGGLE</a>
+                <a href="mailto:sayemuzzaman505@gmail.com" class="footer-link">EMAIL</a>
+            </div>
         </div>
-
-        <div class="project-card">
-          <h3>Image Classifications</h3>
-          <p>
-            Dog vs Cat Image Classification: Created it using both Custom CNN
-            Model and Pre-Trained model on dogs vs cats dataset. The Custom CNN
-            was able to achieve 80% accuracy while the Pre-Trained model
-            MobileNetV2 achieved 98% accuracy.
-          </p>
-          <p>
-            <strong>Technologies:</strong> TensorFlow, Keras, CNN, Transfer
-            Learning
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/Image-Classifications"
-              target="_blank"
-              class="button"
-              >GitHub: Image Classifications</a
-            >
-          </p>
-        </div>
-
-        <div class="project-card">
-          <h3>Pneumonia Detection in Chest X-Rays and Explainable AI</h3>
-          <p>
-            Designed a deep learning model to classify chest X-ray images for
-            pneumonia detection on chest x-ray dataset. Incorporated Explainable
-            AI techniques (Grad-CAM, Lime, Integrated Gradients) to interpret
-            the model's decisions and transparency.
-          </p>
-          <p>
-            <strong>Technologies:</strong> Python, TensorFlow, Keras, XAI,
-            NumPy, EfficientNetB0
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/Computer-Vision-with-XAI"
-              target="_blank"
-              class="button"
-              >GitHub: Computer Vision with XAI</a
-            >
-          </p>
-        </div>
-
-        <div class="project-card">
-          <h3>Sentiment Analysis from Text</h3>
-          <p>
-            Developed a natural language processing (NLP) model to classify
-            emotions on ten classes in English text using LSTM.
-          </p>
-          <p><strong>Technologies:</strong> Python, TensorFlow, LSTM</p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/Sentiment-Analysis/tree/main/English"
-              target="_blank"
-              class="button"
-              >GitHub: Sentiment Analysis</a
-            >
-          </p>
-        </div>
-
-        <div class="project-card">
-          <h3>Big Mart Sales Prediction</h3>
-          <p>
-            Developed a regression model to predict sales based on historical
-            data.
-          </p>
-          <p>
-            <strong>Technologies:</strong> Python, Pandas, NumPy, Scikit-learn,
-            Matplotlib, Seaborn
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/Sale-Prediction"
-              target="_blank"
-              class="button"
-              >GitHub: Sale Prediction</a
-            >
-          </p>
-        </div>
-
-        <div class="project-card">
-          <h3>Flickr8k Data Analysis</h3>
-          <p>
-            Conducted data analysis on Flickr8k dataset to get hidden insights.
-          </p>
-          <p>
-            <strong>Technologies:</strong> Python, Pandas, Matplotlib, Seaborn
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/ImageCaptionGenerators/tree/main/Datasets"
-              target="_blank"
-              class="button"
-              >GitHub: Flickr8k Analysis</a
-            >
-          </p>
-        </div>
-
-        <div class="project-card">
-          <h3>Recommendation System</h3>
-          <p>
-            Build Book and Movie recommendation system using popularity based
-            filtering, collaborative filtering and content-based approaches.
-            Used Book-Crossing: User review ratings and MovieLens 20M Datasets.
-          </p>
-          <p>
-            <strong>Technologies:</strong> Python, Pandas, Numpy, Cosine
-            Similarity
-          </p>
-          <p>
-            <a
-              href="https://github.com/sayemuzzamansiam/Recommender-System"
-              target="_blank"
-              class="button"
-              >GitHub: Recommender-Systems</a
-            >
-          </p>
-        </div>
-      </section>
-
-      <section id="research">
-        <h2><i class="fas fa-atom"></i> Research Publication</h2>
-        <div class="publication-entry">
-          <h3>
-            Explainable Artificial Intelligence for Deep Learning Based
-            Detection of Pneumonia in Chest X-ray Images
-          </h3>
-          <p>
-            <strong>Presented at:</strong> 3rd International Conference on
-            Innovations in Data Analytics (ICIDA 2024)
-          </p>
-          <p><strong>Date:</strong> 18th-19th December 2024</p>
-          <p>
-            <strong>Organized by:</strong> Eminent College of Management &
-            Technology (ECMT)
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container">
-        <p>
-          © <span id="currentYear"></span> Sayemuzzaman Siam. All rights
-          reserved.
-        </p>
-      </div>
     </footer>
 
-    <script>
-      document.getElementById("currentYear").textContent =
-        new Date().getFullYear();
-    </script>
     <script src="network-animation.js"></script>
-  </body>
+</body>
 </html>
