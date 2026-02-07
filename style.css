@@ -1,326 +1,234 @@
-/* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* 1. RESET & BASE */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #ccc; /* Lighter text for dark theme */
-    background-color: #1a1a1a; /* Dark background */
-    padding-top: 0; /* Remove padding if header is not fixed or canvas handles it */
+  background-color: #030507;
+  margin: 0;
+  overflow: hidden; /* Prevents standard scrollbars so the map can pan */
+  font-family: "JetBrains Mono", monospace;
+  color: #cbd5e1;
 }
 
-.container {
-    width: 80%;
-    max-width: 1000px;
-    margin: auto;
-    overflow: hidden;
-    padding: 0 20px;
-    position: relative; /* For z-index context if needed */
-    z-index: 2; /* Ensure content is above canvas if it overlaps */
+/* 2. BACKGROUND GRID */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 1; /* Lowest layer */
+  pointer-events: none;
 }
 
-/* Header */
-header {
-    background: #111; /* Even darker header background */
-    color: #e0e0e0;
-    padding: 30px 0; /* Adjust padding as needed */
-    text-align: center;
-    border-bottom: #007bff 3px solid;
-    position: relative; /* Needed for canvas positioning */
-    overflow: hidden; /* To contain the canvas if it's absolutely positioned */
+/* 3. THE GRAPH CONTAINER */
+#network-container {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5; /* Behind the UI, but above the grid */
 }
 
-#neuralNetworkCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0; /* Behind header content */
+#network-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    position: relative; /* To sit on top of the canvas */
-    z-index: 1;
-    padding: 20px; /* Add some padding so content isn't at the very edge */
-    background-color: rgba(17, 17, 17, 0.3); /* Slight dark transparent bg for readability */
-    border-radius: 8px;
+/* 4. UI COMPONENTS (Glass Effects) */
+.glass {
+  background: rgba(10, 15, 25, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
-.header-text {
-    flex-basis: 70%;
-    text-align: left;
+.glass-dark {
+  background: rgba(5, 7, 10, 0.9);
+  backdrop-filter: blur(10px);
 }
 
-header h1 {
-    margin-bottom: 10px;
-    font-size: 2.8em; /* Slightly larger */
-    color: #00bfff; /* Deep Sky Blue - matches animation */
-    text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff; /* Glowing effect */
+/* 5. INTERACTION FIXES */
+/* This ensures you can click through the sidebar gap to move the graph */
+aside {
+  pointer-events: none;
 }
 
-.contact-info {
-    font-size: 0.9em;
-    margin-bottom: 10px;
+aside > div {
+  pointer-events: auto; /* Keeps buttons inside the sidebar clickable */
 }
 
-.contact-info a {
-    color: #40c4ff; /* Lighter blue for links */
-    text-decoration: none;
-    margin: 0 5px;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
+/* 6. HUD & METRICS */
+.metric p {
+  font-size: 8px;
+  color: #475569;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
 }
 
-.contact-info a:hover {
-    color: #82e9ff;
-    text-shadow: 0 0 5px #82e9ff;
+.metric h2 {
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.contact-info i {
-    margin-right: 3px;
+/* 7. ANIMATIONS */
+.scanline {
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 242, 255, 0.02),
+    transparent
+  );
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  pointer-events: none;
+  animation: scan 8s linear infinite;
 }
 
-.profile-pic {
-    width: 130px; /* Slightly larger */
-    height: 130px;
-    border-radius: 50%;
-    border: 4px solid #007bff; /* Themed border */
-    object-fit: cover;
-    margin-left: 20px;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Glow for profile pic */
+@keyframes scan {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
-/* Sections */
-section {
-    padding: 40px 0; /* Increased padding */
-    border-bottom: 1px solid #333; /* Darker border */
+/* ENHANCED: Pulsing glow animation for instruction box */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.25),
+                0 0 60px rgba(0, 242, 255, 0.1),
+                inset 0 0 20px rgba(0, 242, 255, 0.05);
+    border-color: rgba(0, 242, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(0, 242, 255, 0.4),
+                0 0 80px rgba(0, 242, 255, 0.2),
+                inset 0 0 30px rgba(0, 242, 255, 0.1);
+    border-color: rgba(0, 242, 255, 0.8);
+  }
 }
 
-section:last-of-type {
-    border-bottom: none;
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }
 
-section h2 {
-    color: #00bfff; /* Themed section titles */
-    margin-bottom: 25px;
-    font-size: 2em; /* Larger section titles */
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 8px;
-    display: inline-block;
-    text-shadow: 0 0 3px rgba(0, 191, 255, 0.7);
+/* ENHANCED: Slow bounce animation for icon */
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-section h2 i {
-    margin-right: 12px;
-    color: #007bff;
+.animate-bounce-slow {
+  animation: bounceSlow 2s ease-in-out infinite;
 }
 
-/* Education & Publication Entries */
-.education-entry, .publication-entry, .reference-entry {
-    background: #222; /* Darker cards */
-    color: #ccc;
-    padding: 25px;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    border-left: 5px solid #007bff; /* Accent border */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.education-entry:hover, .publication-entry:hover, .reference-entry:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+.footer-link {
+  font-size: 10px;
+  font-weight: bold;
+  color: #64748b;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  text-decoration: none;
 }
 
-
-.education-entry h3, .publication-entry h3, .reference-entry h3 {
-    color: #40c4ff; /* Lighter blue for headings inside cards */
-    margin-bottom: 10px;
+.footer-link:hover {
+  color: #00f2ff;
+  text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
 }
 
-.education-entry p, .publication-entry p, .reference-entry p {
-    margin-bottom: 8px;
+/* 8. NODE VISUALS */
+.node circle {
+  transition:
+    r 0.3s,
+    stroke-width 0.3s;
 }
 
-/* Skills List */
-#skills ul {
-    list-style: none;
-    padding-left: 0;
+.node:hover circle {
+  stroke: #00f2ff;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.8));
 }
 
-#skills ul li {
-    background: #2a2a2a; /* Darker skill items */
-    color: #bbb;
-    padding: 12px 18px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border-left: 5px solid #00bfff; /* Consistent accent */
-    transition: background-color 0.3s ease;
-}
-#skills ul li:hover {
-    background-color: #333;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-#skills ul li strong {
-    color: #4dd0e1; /* Cyan for skill categories */
+.animate-slide-in {
+  animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Projects */
-/* Ensure section#projects itself is a flex container if you want its h2 outside the flex flow of cards */
-#projects {
-    /* display: flex; /* Remove this from the section if h2 is inside */
-    /* flex-wrap: wrap; */
-    /* gap: 20px; */
-    /* justify-content: space-between; */
-}
-/* Add a wrapper for project cards if you need flexbox for them specifically */
-.projects-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px; /* Spacing between cards */
-    justify-content: space-around; /* Distribute cards nicely */
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
 }
 
-
-.project-card {
-    background: #252525; /* Darker project cards */
-    color: #ccc;
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 20px; /* Keep if not using gap from flex parent */
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-    flex-basis: calc(50% - 15px); /* Two cards per row, accounting for gap */
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+::-webkit-scrollbar-track {
+  background: #030507;
 }
 
-.project-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+::-webkit-scrollbar-thumb {
+  background: #00f2ff22;
+  border-radius: 10px;
 }
 
-.project-card h3 {
-    color: #40c4ff;
-    margin-bottom: 12px;
+::-webkit-scrollbar-thumb:hover {
+  background: #00f2ff44;
 }
 
-.project-card p {
-    margin-bottom: 12px;
-    flex-grow: 1;
+/* Additional Node Styling */
+.node {
+  cursor: pointer;
 }
 
-.project-card p strong {
-    color: #80deea; /* Lighter cyan for emphasis */
+.node text {
+  font-family: "JetBrains Mono", monospace;
+  user-select: none;
 }
 
-.button {
-    display: inline-block;
-    background: #007bff;
-    color: #fff;
-    padding: 12px 18px;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    align-self: flex-start;
-    margin-top: auto;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+/* Connection Lines */
+.connection-line {
+  transition:
+    stroke 0.3s ease,
+    stroke-width 0.3s ease,
+    stroke-opacity 0.3s ease;
 }
 
-.button:hover {
-    background: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-/* Languages List */
-#languages ul {
-    list-style-type: none; /* Remove default bullets */
-    padding-left: 0;
-}
-
-#languages ul li {
-    margin-bottom: 8px;
-    padding: 8px 0;
-    border-bottom: 1px dashed #444; /* Subtle separator */
-}
-#languages ul li:last-child {
-    border-bottom: none;
-}
-
-#languages ul li strong {
-    color: #4dd0e1;
-}
-
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 25px;
-    background: #111; /* Consistent with header */
-    color: #aaa;
-    margin-top: 40px;
-    border-top: 1px solid #333;
-}
-
-/* Responsive Design */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .container {
-        width: 95%; /* More space on smaller screens */
-    }
-
-    .header-content {
-        flex-direction: column;
-        text-align: center;
-        padding: 15px;
-    }
-
-    .header-text {
-        flex-basis: 100%;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    
-    .profile-pic {
-        margin-left: 0;
-        margin-top: 15px;
-        width: 110px;
-        height: 110px;
-    }
-
-    header h1 {
-        font-size: 2.2em;
-    }
-    
-    .projects-grid { /* Target the grid for responsiveness */
-        /* No change needed here yet, flex-basis on .project-card handles it */
-    }
-    .project-card {
-        flex-basis: calc(100% - 15px); /* One card per row on smaller screens */
-    }
-    section h2 {
-        font-size: 1.7em;
-    }
+  aside {
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+    bottom: 6rem;
+  }
+  .metric {
+    display: none;
+  }
 }
 
-@media (max-width: 480px) {
-    header h1 {
-        font-size: 2em;
-    }
-    section h2 {
-        font-size: 1.6em;
-    }
-    .button {
-        padding: 10px 15px;
-        font-size: 0.9em;
-    }
+/* --- DATA FLOW ANIMATION --- */
+@keyframes flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.data-flow {
+  animation: flow 0.5s linear infinite;
 }
