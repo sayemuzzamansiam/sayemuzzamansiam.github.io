@@ -59,16 +59,21 @@ aside > div {
 
 /* 6. HUD & METRICS */
 .metric p {
-  font-size: 8px;
-  color: #475569;
-  letter-spacing: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #00f2ff; 
+  letter-spacing: 3px;
   margin-bottom: 2px;
   text-transform: uppercase;
+  text-shadow: 
+    0 0 2px #00f2ff,
+    0 0 5px #00f2ff,
+    0 0 15px rgba(0, 242, 255, 0.8);
 }
 
 .metric h2 {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* 7. ANIMATIONS */
@@ -232,4 +237,5 @@ aside > div {
 .data-flow {
   animation: flow 0.5s linear infinite;
 }
+
 
