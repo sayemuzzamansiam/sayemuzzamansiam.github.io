@@ -132,7 +132,7 @@ aside > div {
 }
 
 .footer-link {
-  font-size: 10px;
+  font-size: 15px;
   font-weight: bold;
   color: #64748b;
   letter-spacing: 1px;
@@ -232,3 +232,4 @@ aside > div {
 .data-flow {
   animation: flow 0.5s linear infinite;
 }
+
